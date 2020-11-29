@@ -400,9 +400,10 @@ static struct track_info *cmus_get_next_from_main_thread(void)
 	struct track_info *ti = play_queue_remove();
 	if (ti)
 		play_queue_active = true;
-	if (!ti && (!play_queue_active || !stop_after_queue)) {
+	if (!ti) {
+		if (!play_queue_active || !stop_after_queue)
+			ti = play_library ? lib_goto_next() : pl_goto_next();
 		play_queue_active = false;
-		ti = play_library ? lib_goto_next() : pl_goto_next();
 	}
 	return ti;
 }
