@@ -467,7 +467,8 @@ static void dump_print_buffer(int row, int col)
  */
 static int format_str(char *buf, const char *str, int width)
 {
-	int s = 0, d = 0, ellipsis_pos = 0, cut_double_width = 0;
+	int s = 0, ellipsis_pos = 0, cut_double_width = 0;
+	size_t d = 0;
 
 	while (1) {
 		uchar u;
@@ -1237,7 +1238,8 @@ static void dump_buffer(const char *buffer)
 static void do_update_commandline(void)
 {
 	char *str;
-	int w, idx;
+	int w;
+	size_t idx;
 	char ch;
 
 	move(LINES - 1, 0);
@@ -1599,7 +1601,7 @@ void error_msg(const char *format, ...)
 	}
 }
 
-int yes_no_query(const char *format, ...)
+enum ui_query_answer yes_no_query(const char *format, ...)
 {
 	char buffer[512];
 	va_list ap;
@@ -1623,12 +1625,21 @@ int yes_no_query(const char *format, ...)
 
 	while (1) {
 		int ch = getch();
-
-		if (ch == ERR || ch == 0)
+		if (ch == ERR || ch == 0) {
+			if (!cmus_running) {
+				ret = UI_QUERY_ANSWER_ERROR;
+				break;
+			}
 			continue;
-		if (ch == 'y')
-			ret = 1;
-		break;
+		}
+
+		if (ch == 'y') {
+			ret = UI_QUERY_ANSWER_YES;
+			break;
+		} else {
+			ret = UI_QUERY_ANSWER_NO;
+			break;
+		}
 	}
 	update_commandline();
 	return ret;
@@ -1794,67 +1805,74 @@ static void clear_error(void)
 
 /* screen updates }}} */
 
-static void spawn_status_program(void)
+static int fill_status_program_track_info_args(char **argv, int i, struct track_info *ti)
 {
-	enum player_status status;
-	const char *stream_title = NULL;
-	char *argv[32];
-	int i;
+	/* returns first free argument index */
 
+	const char *stream_title = NULL;
+	if (player_info.status == PLAYER_STATUS_PLAYING && is_http_url(ti->filename))
+		stream_title = get_stream_title();
+
+	static const char *keys[] = {
+		"artist", "albumartist", "album", "discnumber", "tracknumber", "title",
+		"date",	"musicbrainz_trackid", NULL
+	};
+	int j;
+
+	if (is_http_url(ti->filename)) {
+		argv[i++] = xstrdup("url");
+	} else {
+		argv[i++] = xstrdup("file");
+	}
+	argv[i++] = xstrdup(ti->filename);
+
+	if (track_info_has_tag(ti)) {
+		for (j = 0; keys[j]; j++) {
+			const char *key = keys[j];
+			const char *val;
+
+			if (strcmp(key, "title") == 0 && stream_title)
+				/*
+				 * StreamTitle overrides radio station name
+				 */
+				val = stream_title;
+			else
+				val = keyvals_get_val(ti->comments, key);
+
+			if (val) {
+				argv[i++] = xstrdup(key);
+				argv[i++] = xstrdup(val);
+			}
+		}
+		if (ti->duration > 0) {
+			char buf[32];
+			snprintf(buf, sizeof(buf), "%d", ti->duration);
+			argv[i++] = xstrdup("duration");
+			argv[i++] = xstrdup(buf);
+		}
+	} else if (stream_title) {
+		argv[i++] = xstrdup("title");
+		argv[i++] = xstrdup(stream_title);
+	}
+
+	return i;
+}
+
+static void spawn_status_program_inner(const char *status_text, struct track_info *ti)
+{
 	if (status_display_program == NULL || status_display_program[0] == 0)
 		return;
 
-	status = player_info.status;
-	if (status == PLAYER_STATUS_PLAYING && player_info.ti && is_http_url(player_info.ti->filename))
-		stream_title = get_stream_title();
+	char *argv[32];
+	int i = 0;
 
-	i = 0;
 	argv[i++] = xstrdup(status_display_program);
 
 	argv[i++] = xstrdup("status");
-	argv[i++] = xstrdup(player_status_names[status]);
-	if (player_info.ti) {
-		static const char *keys[] = {
-			"artist", "albumartist", "album", "discnumber", "tracknumber", "title",
-			"date",	"musicbrainz_trackid", NULL
-		};
-		int j;
+	argv[i++] = xstrdup(status_text);
 
-		if (is_http_url(player_info.ti->filename)) {
-			argv[i++] = xstrdup("url");
-		} else {
-			argv[i++] = xstrdup("file");
-		}
-		argv[i++] = xstrdup(player_info.ti->filename);
-
-		if (track_info_has_tag(player_info.ti)) {
-			for (j = 0; keys[j]; j++) {
-				const char *key = keys[j];
-				const char *val;
-
-				if (strcmp(key, "title") == 0 && stream_title)
-					/*
-					 * StreamTitle overrides radio station name
-					 */
-					val = stream_title;
-				else
-					val = keyvals_get_val(player_info.ti->comments, key);
-
-				if (val) {
-					argv[i++] = xstrdup(key);
-					argv[i++] = xstrdup(val);
-				}
-			}
-			if (player_info.ti->duration > 0) {
-				char buf[32];
-				snprintf(buf, sizeof(buf), "%d", player_info.ti->duration);
-				argv[i++] = xstrdup("duration");
-				argv[i++] = xstrdup(buf);
-			}
-		} else if (stream_title) {
-			argv[i++] = xstrdup("title");
-			argv[i++] = xstrdup(stream_title);
-		}
+	if (ti) {
+		i = fill_status_program_track_info_args(argv, i, ti);
 	}
 	argv[i++] = NULL;
 
@@ -1862,6 +1880,11 @@ static void spawn_status_program(void)
 		error_msg("couldn't run `%s': %s", status_display_program, strerror(errno));
 	for (i = 0; argv[i]; i++)
 		free(argv[i]);
+}
+
+static void spawn_status_program(void)
+{
+	spawn_status_program_inner(player_status_names[player_info.status], player_info.ti);
 }
 
 static volatile sig_atomic_t ctrl_c_pressed = 0;
@@ -1873,6 +1896,7 @@ static void sig_int(int sig)
 
 static void sig_shutdown(int sig)
 {
+	d_print("sig_shutdown %d\n", sig);
 	cmus_running = 0;
 }
 
@@ -2533,5 +2557,6 @@ int main(int argc, char *argv[])
 	init_all();
 	main_loop();
 	exit_all();
+	spawn_status_program_inner("exiting", NULL);
 	return 0;
 }
