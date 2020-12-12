@@ -1,4 +1,4 @@
-cmus (2.8.0+git20201212.exp.5352a76-1) unstable; urgency=medium
+cmus (2.8.0+git20201212.exp.ead5c31-1) unstable; urgency=medium
 
   * Updated to upstream master.
   * Merge pgaskin/fix-pl-mouse.
@@ -9,8 +9,9 @@ cmus (2.8.0+git20201212.exp.5352a76-1) unstable; urgency=medium
   * Merge edclements/shuffle-first-track.
   * Merge mathieu-lemay/fix-mpris-title-and-album.
   * Merge pgaskin/win-add-no-next.
+  * Merge timgates42/bugfix_typo_special.
 
- -- Patrick Gaskin <patrick@pgaskin.net>  Sat, 12 Dec 2020 16:57:06 -0500
+ -- Patrick Gaskin <patrick@pgaskin.net>  Sat, 12 Dec 2020 17:02:55 -0500
 
 cmus (2.8.0-1) unstable; urgency=medium
 
