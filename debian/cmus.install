@@ -23,6 +23,7 @@ debian/tmp/usr/share/cmus/xterm-white.theme
 debian/tmp/usr/share/cmus/green-mono-88.theme
 debian/tmp/usr/share/cmus/jellybeans.theme
 debian/tmp/usr/share/cmus/gruvbox-alt.theme
+debian/tmp/usr/share/cmus/gruvbox-warm.theme
 debian/tmp/usr/share/cmus/zenburn.theme
 debian/tmp/usr/share/cmus/green.theme
 debian/tmp/usr/share/cmus/gray-88.theme
@@ -31,3 +32,4 @@ debian/tmp/usr/share/cmus/gruvbox.theme
 debian/tmp/usr/share/cmus/dracula.theme
 debian/tmp/usr/share/cmus/default.theme
 debian/tmp/usr/share/cmus/rc
+contrib/_cmus /usr/share/zsh/vendor-completions/
