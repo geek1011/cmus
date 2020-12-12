@@ -4,10 +4,11 @@ Upstream-Contact: https://github.com/cmus/cmus/issues
 Source: https://cmus.github.io/
 
 Files: *
+Copyright: Copyright 2008-2020 Various Authors
 License: GPL-2+
 
 Files: debian/*
-Copyright: 2019 Patrick Gaskin
+Copyright: 2019-2020 Patrick Gaskin
 License: GPL-2+
 
 License: GPL-2+

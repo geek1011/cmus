@@ -1,3 +1,0 @@
-version=3
-opts="dversionmangle=s/\+git\d+$//,uversionmangle=s/([\d\.]+)-(rc|beta)(.*)/\1~\2\3/,filenamemangle=s/.+\/v?(\d\S*)\.tar\.gz/cmus-$1\.tar\.gz/" \
-https://github.com/cmus/cmus/tags .*/v?(\d\S*)\.tar\.gz
