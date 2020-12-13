@@ -31,3 +31,4 @@ debian/tmp/usr/share/cmus/gruvbox.theme
 debian/tmp/usr/share/cmus/dracula.theme
 debian/tmp/usr/share/cmus/default.theme
 debian/tmp/usr/share/cmus/rc
+contrib/_cmus /usr/share/zsh/vendor-completions/
