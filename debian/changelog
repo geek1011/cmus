@@ -1,4 +1,4 @@
-cmus (2.8.0+git20201213.exp.a83dcb1-1) unstable; urgency=medium
+cmus (2.8.0+git20201213.exp.6086a06-1) unstable; urgency=medium
 
   * Updated to upstream master.
     * Includes pgaskin/fix-pl-mouse.
@@ -14,7 +14,7 @@ cmus (2.8.0+git20201213.exp.a83dcb1-1) unstable; urgency=medium
   * Update pgaskin/mouse-events-title.
   * Merge pgaskin/fix-whitespace.
 
- -- Patrick Gaskin <patrick@pgaskin.net>  Sun, 13 Dec 2020 17:43:44 -0500
+ -- Patrick Gaskin <patrick@pgaskin.net>  Sun, 13 Dec 2020 18:20:09 -0500
 
 cmus (2.8.0+git20201212.exp.a07abce-1) unstable; urgency=medium
 
