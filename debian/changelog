@@ -1,4 +1,4 @@
-cmus (2.8.0+git20201213.exp.a853f20-1) unstable; urgency=medium
+cmus (2.8.0+git20201213.exp.a83dcb1-1) unstable; urgency=medium
 
   * Updated to upstream master.
     * Includes pgaskin/fix-pl-mouse.
@@ -7,15 +7,14 @@ cmus (2.8.0+git20201213.exp.a853f20-1) unstable; urgency=medium
     * Includes mathieu-lemay/fix-mpris-title-and-album.
     * Includes pgaskin/win-add-no-next.
     * Includes timgates42/bugfix_typo_special.
+    * Includes pgaskin/tree-width-option.
     * Includes pgaskin/update-zsh-completion.
     * Includes eshrh/remote-f-doc.
-  * Update pgaskin/win-add-no-next.
   * Update pgaskin/mouse-events-bar.
   * Update pgaskin/mouse-events-title.
-  * Update pgaskin/tree-width-option.
   * Merge pgaskin/fix-whitespace.
 
- -- Patrick Gaskin <patrick@pgaskin.net>  Sun, 13 Dec 2020 15:04:34 -0500
+ -- Patrick Gaskin <patrick@pgaskin.net>  Sun, 13 Dec 2020 17:43:44 -0500
 
 cmus (2.8.0+git20201212.exp.a07abce-1) unstable; urgency=medium
 
