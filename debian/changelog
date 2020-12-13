@@ -1,3 +1,10 @@
+cmus (2.8.0-2) unstable; urgency=medium
+
+  * Add zsh completions.
+  * Update copyright.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Sun, 13 Dec 2020 18:16:58 -0500
+
 cmus (2.8.0-1) unstable; urgency=medium
 
   * Complete redo of cmus package using debhelper.
