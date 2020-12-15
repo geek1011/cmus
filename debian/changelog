@@ -1,3 +1,12 @@
+cmus (2.8.0+git20201215.exp.79b4ea3-1) unstable; urgency=medium
+
+  * Updated to upstream master.
+    * Includes pgaskin/mouse-events-bar.
+  * Update pgaskin/mouse-events-title-1 (pgaskin/mouse-events-title rebased on
+    master).
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Tue, 15 Dec 2020 11:27:29 -0500
+
 cmus (2.8.0+git20201213.exp.6086a06-1) unstable; urgency=medium
 
   * Updated to upstream master.
