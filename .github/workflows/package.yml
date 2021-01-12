@@ -1,0 +1,52 @@
+name: Debian Package
+on:
+  push:
+    paths:
+      - 'debian/*'
+      - '.github/workflows/package.yml'
+  pull_request:
+    paths:
+      - 'debian/*'
+      - '.github/workflows/package.yml'
+
+jobs:
+  build:
+    name: Package
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        debian: [buster, bullseye, sid]
+    container: debian:${{matrix.debian}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Dependencies
+        run: |
+          apt-get update -qyy
+          apt-get install -qyy build-essential devscripts
+      - name: Package dependencies
+        run: |
+          DEBIAN_FRONTEND=noninteractive mk-build-deps --install --remove --tool='apt-get --no-install-recommends -yy'
+      - name: Update changelog
+        # this is really hacky, but it works fine for this
+        run: |
+          head -n1 debian/changelog
+          sed -i '0,/\.exp/s//.${{github.run_number}}.exp/' debian/changelog
+          sed -i '0,/unstable/s//${{matrix.debian}}/' debian/changelog
+          head -n1 debian/changelog
+      - name: Build
+        run: |
+          tar czf ../cmus_$(dpkg-parsechangelog --show-field Version | cut -d- -f1).orig.tar.gz .
+          debuild -us -uc
+          dh_clean
+          make clean
+      - name: Archive
+        run: |
+          mkdir pkg
+          cp -v ../*.deb ../*.dsc ../*.build ../*.buildinfo ../*.changes ./pkg
+          XZ_OPT=-9 tar -cJf cmus-deb.tar.xz -C "${PWD}/pkg" .
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: cmus-deb (${{matrix.debian}})
+          path: pkg/*
