@@ -1,3 +1,15 @@
+cmus (2.8.0+git20210111.exp.7cbfdac-1) unstable; urgency=medium
+
+  * Updated to upstream master.
+    * Includes pgaskin/fix-whitespace.
+    * Includes edclements/shuffle-first-track.
+    * Includes pgaskin/github-actions.
+  * Merge pgaskin/proofread.
+  * Merge pgaskin/docs.
+  * Merge pgaskin/gruvbox-theme-1.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Tue, 11 Jan 2022 22:47:11 -0500
+
 cmus (2.8.0+git20201215.exp.67626e4-1) unstable; urgency=medium
 
   * Updated to upstream master.
