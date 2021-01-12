@@ -1,8 +1,16 @@
+cmus (2.8.0+git20210112.exp.5e2541c-1) unstable; urgency=medium
+
+  * Updated to upstream master.
+    * Includes pgaskin/docs.
+  * Update pgaskin/proofread.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Tue, 12 Jan 2021 14:07:34 -0500
+
 cmus (2.8.0+git20210111.exp.aa1c18b-1) unstable; urgency=medium
 
   * Merge pgaskin/help-view-keybind-width.
 
- -- Patrick Gaskin <patrick@pgaskin.net>  Tue, 11 Jan 2022 23:27:48 -0500
+ -- Patrick Gaskin <patrick@pgaskin.net>  Wed, 11 Jan 2021 23:27:48 -0500
 
 cmus (2.8.0+git20210111.exp.7cbfdac-1) unstable; urgency=medium
 
@@ -14,7 +22,7 @@ cmus (2.8.0+git20210111.exp.7cbfdac-1) unstable; urgency=medium
   * Merge pgaskin/docs.
   * Merge pgaskin/gruvbox-theme-1.
 
- -- Patrick Gaskin <patrick@pgaskin.net>  Tue, 11 Jan 2022 22:47:11 -0500
+ -- Patrick Gaskin <patrick@pgaskin.net>  Wed, 11 Jan 2021 22:47:11 -0500
 
 cmus (2.8.0+git20201215.exp.67626e4-1) unstable; urgency=medium
 
