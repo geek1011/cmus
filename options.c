@@ -41,6 +41,7 @@
 #include "debug.h"
 #include "discid.h"
 #include "mpris.h"
+#include "colors.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -88,38 +89,38 @@ int stop_after_queue = 0;
 int tree_width_percent = 33;
 int tree_width_max = 0;
 
-int colors[NR_COLORS] = {
-	-1,
-	-1,
-	COLOR_RED | BRIGHT,
-	COLOR_YELLOW | BRIGHT,
+struct color_opt colors[NR_COLORS] = {
+	{-1, 0, 0, 0, 0},
+	{-1, 0, 0, 0, 0},
+	{COLOR_RED | BRIGHT, 0, 0, 0, 0},
+	{COLOR_YELLOW | BRIGHT, 0, 0, 0, 0},
 
-	COLOR_BLUE,
-	COLOR_WHITE,
-	COLOR_BLACK,
-	COLOR_BLUE,
+	{COLOR_BLUE, 0, 0, 0, 0},
+	{COLOR_WHITE, 0, 0, 0, 0},
+	{COLOR_BLACK, 0, 0, 0, 0},
+	{COLOR_BLUE, 0, 0, 0, 0},
 
-	COLOR_WHITE | BRIGHT,
-	-1,
-	COLOR_YELLOW | BRIGHT,
-	COLOR_BLUE,
+	{COLOR_WHITE | BRIGHT, 0, 0, 0, 0},
+	{-1, 0, 0, 0, 0},
+	{COLOR_YELLOW | BRIGHT, 0, 0, 0, 0},
+	{COLOR_BLUE, 0, 0, 0, 0},
 
-	COLOR_YELLOW | BRIGHT,
-	COLOR_BLUE | BRIGHT,
-	-1,
-	COLOR_WHITE,
+	{COLOR_YELLOW | BRIGHT, 0, 0, 0, 0},
+	{COLOR_BLUE | BRIGHT, 0, 0, 0, 0},
+	{-1, 0, 0, 0, 0},
+	{COLOR_WHITE, 0, 0, 0, 0},
 
-	COLOR_YELLOW | BRIGHT,
-	COLOR_WHITE,
-	COLOR_BLACK,
-	COLOR_BLUE,
+	{COLOR_YELLOW | BRIGHT, 0, 0, 0, 0},
+	{COLOR_WHITE, 0, 0, 0, 0},
+	{COLOR_BLACK, 0, 0, 0, 0},
+	{COLOR_BLUE, 0, 0, 0, 0},
 
-	COLOR_WHITE | BRIGHT,
-	COLOR_BLUE,
-	COLOR_WHITE | BRIGHT,
-	-1,
+	{COLOR_WHITE | BRIGHT, 0, 0, 0, 0},
+	{COLOR_BLUE, 0, 0, 0, 0},
+	{COLOR_WHITE | BRIGHT, 0, 0, 0, 0},
+	{-1, 0, 0, 0, 0},
 
-	-1,
+	{-1, 0, 0, 0, 0},
 };
 
 int attrs[NR_ATTRS] = {
@@ -1197,31 +1198,154 @@ static void toggle_stop_after_queue(void *data)
 
 /* special callbacks (id set) {{{ */
 
-static const char * const color_enum_names[1 + 8 * 2 + 1] = {
-	"default",
-	"black", "red", "green", "yellow", "blue", "magenta", "cyan", "gray",
-	"darkgray", "lightred", "lightgreen", "lightyellow", "lightblue", "lightmagenta", "lightcyan", "white",
-	NULL
-};
-
 static void get_color(void *data, char *buf, size_t size)
 {
-	int val = *(int *)data;
-	if (val < 16) {
-		strscpy(buf, color_enum_names[val + 1], size);
+	struct color_opt *opt = (struct color_opt *)data;
+	size_t i;
+
+	#define rgb_fmt "#%02X%02X%02X"
+	#define rgb_val (opt->r * 255 / 1000), \
+			(opt->g * 255 / 1000), \
+			(opt->b * 255 / 1000)
+
+	if (opt->n < 0) {
+		if (!opt->rgb) {
+			// =default
+			strscpy(buf, "default", size);
+		} else {
+			// =default#RRGGBB
+			snprintf(buf, size, "-1" rgb_fmt, rgb_val);
+		}
 	} else {
-		buf_int(buf, val, size);
+		for (i = 0; i < CURSED_XTERM256_N; i++) {
+			if (opt->n != i) {
+				if (cursed_xterm256_palette[i].n) {
+					if (!opt->rgb) {
+						// =colorname
+						strscpy(buf, cursed_xterm256_palette[i].n, size);
+					} else {
+						// =colorname#RRGGBB
+						snprintf(buf, size, "%s" rgb_fmt, cursed_xterm256_palette[i].n, rgb_val);
+					}
+				} else {
+					if (!opt->rgb) {
+						// =coloridx
+						buf_int(buf, i, size);
+					} else {
+						// =coloridx#RRGGBB
+						snprintf(buf, size, "%zu" rgb_fmt, i, rgb_val);
+					}
+				}
+				break;
+			}
+		}
 	}
+
+	#undef rgb_fmt
+	#undef rgb_val
 }
 
 static void set_color(void *data, const char *buf)
 {
-	int color;
+	struct color_opt *opt = (struct color_opt *)data;
+	size_t i, j;
+	char c;
+	int v;
 
-	if (!parse_enum(buf, -1, 255, color_enum_names, &color))
-		return;
+	opt->n = -2;
+	opt->rgb = 0;
 
-	*(int *)data = color;
+	for (i=0;;) {
+		c = buf[i++];
+
+		// color index
+		if (c >= '0' && c <= '9') {
+			if (opt->n == -2)
+				opt->n = 0;
+			if ((opt->n = (opt->n * 10) + (c - '0')) >= CURSED_XTERM256_N) {
+				error_msg("color index in '%s' out of range", buf);
+				return;
+			}
+			continue;
+		}
+
+		// color index (special case: -1)
+		if (i == 1 && !strncmp(buf, "-1#", 3)) {
+			opt->n = -1;
+			i = 2;
+			BUG_ON(buf[i] != '#');
+		}
+
+		// end of string before rgb color
+		if (c == '\0') {
+			if (opt->n == -2) {
+				error_msg("unexpected end of string before color index in '%s'", buf);
+				return;
+			}
+			break;
+		}
+
+		// rgb color
+		if (c == '#') {
+			if (opt->n == -2) {
+				error_msg("unexpected start of rgb color before index in '%s'", buf);
+				return;
+			}
+			opt->rgb = 1;
+
+			// read the rgb color
+			for (j=0;;) {
+				c = buf[i + ++j];
+				if (j == 6) {
+					v = (int) strtol(&buf[i], NULL, 16);
+					opt->r = (short)(((v >> 16) & 0xFF) * 1000 / 255);
+					opt->g = (short)(((v >>  8) & 0xFF) * 1000 / 255);
+					opt->b = (short)(((v >>  0) & 0xFF) * 1000 / 255);
+					continue;
+				}
+				if (j != 7) {
+					if (c == '\0') {
+						error_msg("unexpected end of string at rgb digit %zu in '%s'", j, buf);
+						return;
+					}
+					if ((c < '0' && c > '9') && (c < 'a' && c > 'f') && (c < 'A' && c > 'F')) {
+						error_msg("unexpected rgb digit '%c' in color '%s'", c, buf);
+						return;
+					}
+					continue;
+				}
+				if (c != '\0') {
+					error_msg("unexpected character '%c' after rgb color in '%s'", c, buf);
+					return;
+				}
+				break;
+			}
+			break;
+		}
+
+		// color name only
+		if (!strcmp(buf, "default")) {
+			opt->n = -1;
+			break;
+		}
+		for (j = 0; j < CURSED_XTERM256_N; j++) {
+			if (cursed_xterm256_palette[j].n && !strcmp(cursed_xterm256_palette[j].n, buf)) {
+				opt->n = j;
+				break;
+			}
+		}
+		if (opt->n == -2) {
+			error_msg("unknown color name '%s'", buf);
+			return;
+		}
+	}
+
+	BUG_ON(opt->n < -1 || opt->n >= CURSED_XTERM256_N);
+	BUG_ON(opt->rgb != 0 && opt->rgb != 1);
+	BUG_ON(opt->rgb && (opt->r < 0 || opt->r > 1000));
+	BUG_ON(opt->rgb && (opt->g < 0 || opt->g > 1000));
+	BUG_ON(opt->rgb && (opt->b < 0 || opt->b > 1000));
+
 	update_colors();
 	update_full();
 }

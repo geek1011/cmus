@@ -155,7 +155,13 @@ extern int tree_width_max;
 extern const char * const aaa_mode_names[];
 extern const char * const view_names[NR_VIEWS + 1];
 
-extern int colors[NR_COLORS];
+struct color_opt {
+	short n;       // fallback color index
+	int rgb;       // whether r/g/b is set
+	short r, g, b; // out of 1000, not 256
+};
+
+extern struct color_opt colors[NR_COLORS];
 extern int attrs[NR_ATTRS];
 
 /* format string for tree window (tree view) */

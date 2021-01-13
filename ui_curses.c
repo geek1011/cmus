@@ -51,6 +51,7 @@
 #include "mixer.h"
 #include "mpris.h"
 #include "locking.h"
+#include "colors.h"
 #ifdef HAVE_CONFIG
 #include "config/curses.h"
 #include "config/iconv.h"
@@ -1771,15 +1772,38 @@ void update_colors(void)
 	if (!ui_initialized)
 		return;
 
-	for (i = 0; i < NR_CURSED; i++) {
-		int bg = colors[cursed_to_bg_idx[i]];
-		int fg = colors[cursed_to_fg_idx[i]];
-		int attr = attrs[cursed_to_attr_idx[i]];
-		int pair = i + 1;
+	bool rgb = can_change_color();
 
+	for (i = 0; i < NR_CURSED; i++) {
+		struct color_opt bgc = colors[cursed_to_bg_idx[i]];
+		struct color_opt fgc = colors[cursed_to_fg_idx[i]];
+		int attr = attrs[cursed_to_attr_idx[i]];
+
+		short pair = (short)(i + 1);
+		short bg = bgc.n;
+		short fg = fgc.n;
+
+		// TODO: maybe direct-color support?
+
+		if (rgb) {
+			// note: the second part of each has two purposes: to
+			// normalize the color, and to prevent old colors from
+			// affecting new ones
+			if (bgc.rgb) {
+				init_color(bg, bgc.r, bgc.g, bgc.b);
+			} else if (bgc.n != -1) {
+				init_color(bg, cursed_xterm256_palette[bg].r, cursed_xterm256_palette[bg].g, cursed_xterm256_palette[bg].b);
+			}
+			if (fgc.rgb) {
+				init_color(bg, fgc.r, fgc.g, fgc.b);
+			} else if (fgc.n != -1) {
+				init_color(fg, cursed_xterm256_palette[fg].r, cursed_xterm256_palette[fg].g, cursed_xterm256_palette[fg].b);
+			}
+		}
+		
 		if (fg >= 8 && fg <= 15) {
 			/* fg colors 8..15 are special (0..7 + bold) */
-			init_pair(pair, fg & 7, bg);
+			init_pair(pair, (short)(fg & 7), bg);
 			pairs[i] = COLOR_PAIR(pair) | (fg & BRIGHT ? A_BOLD : 0) | attr;
 		} else {
 			init_pair(pair, fg, bg);
@@ -2288,6 +2312,12 @@ static void main_loop(void)
 		if (FD_ISSET(cmus_next_track_request_fd, &set))
 			cmus_provide_next_track();
 	}
+
+#if HAVE_USE_DEFAULT_COLORS
+	if (has_colors()) {
+		use_default_colors();
+	}
+#endif
 }
 
 static void init_curses(void)
@@ -2323,8 +2353,8 @@ static void init_curses(void)
 	noecho();
 
 	if (has_colors()) {
-#if HAVE_USE_DEFAULT_COLORS
 		start_color();
+#if HAVE_USE_DEFAULT_COLORS
 		use_default_colors();
 #endif
 	}

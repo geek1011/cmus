@@ -1215,7 +1215,8 @@ wrap_search (true)
 
 @h2 Colors
 
-Color is an integer in range -1..255.
+Color is an integer in range -1..255, optionally followed by a RGB color in the
+format '#RRGGBB' to be used when supported.
 
 The following color names are recognized:
 
