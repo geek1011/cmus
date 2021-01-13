@@ -36,7 +36,7 @@ jobs:
           head -n1 debian/changelog
       - name: Build
         run: |
-          tar czf ../cmus_$(dpkg-parsechangelog --show-field Version | cut -d- -f1).orig.tar.gz .
+          tar -czf ../cmus_$(dpkg-parsechangelog --show-field Version | cut -d- -f1).orig.tar.gz --exclude='./debian' .
           debuild -us -uc
           dh_clean
           make clean
