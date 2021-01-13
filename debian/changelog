@@ -1,3 +1,10 @@
+cmus (2.9.0~rc0+git20210113.exp.c6b13c8-1) unstable; urgency=medium
+
+  * Merge nefthy/master (fix gcc truncation warnings).
+  * Merge pgaskin/unused-sndio-fn.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Wed, 13 Jan 2021 16:54:03 -0500
+
 cmus (2.9.0~rc0+git20210113.exp.9f6601f-1) unstable; urgency=medium
 
   * Updated to upstream master.
