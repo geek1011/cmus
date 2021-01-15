@@ -1105,10 +1105,7 @@ static void update_editable_window(struct editable *e, const char *title, const 
 			utf8_encode_to_buf(filename);
 			filename = conv_buffer;
 		}
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-truncation"
-		snprintf(buf, sizeof(buf), "%s %s - %d tracks", title, pretty(filename), e->nr_tracks);
-#pragma GCC diagnostic pop
+		snprintf(buf, sizeof(buf), "%s %.256s - %d tracks", title, pretty(filename), e->nr_tracks);
 	} else {
 		snprintf(buf, sizeof(buf), "%s - %d tracks", title, e->nr_tracks);
 	}
