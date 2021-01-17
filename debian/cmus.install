@@ -17,6 +17,7 @@ debian/tmp/usr/lib/cmus/op/alsa.so
 debian/tmp/usr/lib/cmus/op/jack.so
 debian/tmp/usr/lib/cmus/op/pulse.so
 debian/tmp/usr/share/cmus/solarized-light.theme
+debian/tmp/usr/share/cmus/amazon.theme
 debian/tmp/usr/share/cmus/cyan.theme
 debian/tmp/usr/share/cmus/night.theme
 debian/tmp/usr/share/cmus/xterm-white.theme

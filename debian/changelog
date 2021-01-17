@@ -1,3 +1,10 @@
+cmus (2.9.0-1) unstable; urgency=medium
+
+  * New upstream release: v2.9.0.
+  * Remove merged patches.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Sun, 17 Jan 2021 05:56:13 -0500
+
 cmus (2.9.0~rc0+git20210114.exp.9a05550-1) unstable; urgency=medium
 
   * Updated to upstream master.
