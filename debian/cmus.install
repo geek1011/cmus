@@ -17,12 +17,14 @@ debian/tmp/usr/lib/cmus/op/alsa.so
 debian/tmp/usr/lib/cmus/op/jack.so
 debian/tmp/usr/lib/cmus/op/pulse.so
 debian/tmp/usr/share/cmus/solarized-light.theme
+debian/tmp/usr/share/cmus/amazon.theme
 debian/tmp/usr/share/cmus/cyan.theme
 debian/tmp/usr/share/cmus/night.theme
 debian/tmp/usr/share/cmus/xterm-white.theme
 debian/tmp/usr/share/cmus/green-mono-88.theme
 debian/tmp/usr/share/cmus/jellybeans.theme
 debian/tmp/usr/share/cmus/gruvbox-alt.theme
+debian/tmp/usr/share/cmus/gruvbox-warm.theme
 debian/tmp/usr/share/cmus/zenburn.theme
 debian/tmp/usr/share/cmus/green.theme
 debian/tmp/usr/share/cmus/gray-88.theme
