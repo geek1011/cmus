@@ -19,12 +19,12 @@
 
 #include <roaraudio.h>
 
-#include "op.h"
-#include "mixer.h"
-#include "xmalloc.h"
-#include "utils.h"
-#include "misc.h"
-#include "debug.h"
+#include "../op.h"
+#include "../mixer.h"
+#include "../xmalloc.h"
+#include "../utils.h"
+#include "../misc.h"
+#include "../debug.h"
 
 // we do not use native 2^16-1 here as they use signed ints with 16 bit
 // so we use 2^(16-1)-1 here.
@@ -145,7 +145,7 @@ static int op_roar_open(sample_format_t sf, const channel_position_t *channel_ma
 		return -OP_ERROR_ERRNO;
 	}
 
-	if ( roar_simple_connect2(&con, NULL, "C* Music Player (cmus)", ROAR_ENUM_FLAG_NONBLOCK, 0) == -1 ) {
+	if (roar_simple_connect2(&con, NULL, "C* Music Player (cmus)", ROAR_ENUM_FLAG_NONBLOCK, 0) == -1) {
 		ROAR_DBG("op_roar_open(*) = ?");
 
 		roar_err_to_errno();

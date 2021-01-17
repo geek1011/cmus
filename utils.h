@@ -268,7 +268,7 @@ static inline uint32_t read_le24(const char *buf)
 
 static inline int32_t read_le24i(const char *buf)
 {
-	uint32_t a = read_le24(buf); 
+	uint32_t a = read_le24(buf);
 	return (a & 0x800000) ? 0xFF000000 | a : a;
 }
 
@@ -321,14 +321,18 @@ static inline void init_pipes(int *out, int *in)
 static inline void notify_via_pipe(int pipe)
 {
 	char buf = 0;
-	write(pipe, &buf, 1);
+	if (write(pipe, &buf, 1) != 1) {
+		d_print("write to pipe failed. errno = %d\n", errno);
+	}
 }
 
 static inline void clear_pipe(int pipe, size_t bytes)
 {
 	char buf[128];
 	size_t bytes_to_read = min_u(sizeof(buf), bytes);
-	read(pipe, buf, bytes_to_read);
+	if (read(pipe, buf, bytes_to_read) < 0) {
+		d_print("read from pipe failed. errno = %d\n", errno);
+	}
 }
 
 static inline ssize_t strscpy(char *dst, const char *src, size_t size)

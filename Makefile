@@ -7,7 +7,7 @@ _ver1	= $(shell git describe --tags $(REV) 2>/dev/null)
 # SHA1
 _ver2	= $(shell git rev-parse --verify --short $(REV) 2>/dev/null)
 # hand-made
-_ver3	= v2.8.0
+_ver3	= v2.9.0
 
 VERSION	= $(or $(_ver0),$(_ver1),$(_ver2),$(_ver3))
 
@@ -264,7 +264,7 @@ quiet_cmd_ttman = MAN    $@
 
 data		= $(wildcard data/*)
 
-clean		+= *.o ip/*.lo op/*.lo ip/*.so op/*.so cmus libcmus.a cmus.def cmus.base cmus.exp cmus-remote Doc/*.o Doc/ttman Doc/*.1 Doc/*.7 .install.log
+clean		+= *.o ip/*.lo op/*.lo ip/*.so op/*.so *.lo cmus libcmus.a cmus.def cmus.base cmus.exp cmus-remote Doc/*.o Doc/ttman Doc/*.1 Doc/*.7 .install.log
 distclean	+= .version config.mk config/*.h tags
 
 main: cmus cmus-remote

@@ -247,8 +247,8 @@ static void move_sel(struct editable *e, struct list_head *after)
 	editable_track_to_iter(e, to_simple_track(after->next), &iter);
 
 	if (editable_owns_shared(e)) {
-		window_set_sel(e->shared->win, &iter);
 		window_changed(e->shared->win);
+		window_set_sel(e->shared->win, &iter);
 	}
 }
 
@@ -410,12 +410,12 @@ int _editable_for_each_sel(struct editable *e, track_info_cb cb, void *data,
 }
 
 int editable_for_each_sel(struct editable *e, track_info_cb cb, void *data,
-		int reverse)
+		int reverse, int advance)
 {
 	int rc;
 
 	rc = _editable_for_each_sel(e, cb, data, reverse);
-	if (e->nr_marked == 0 && editable_owns_shared(e))
+	if (advance && e->nr_marked == 0 && editable_owns_shared(e))
 		window_down(e->shared->win, 1);
 	return rc;
 }

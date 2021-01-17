@@ -105,6 +105,20 @@ size_t u_strlen_safe(const char *str);
 int u_str_width(const char *str);
 
 /*
+ * @uch  unicode character
+ *
+ * Retuns size of @uch if it were printed.
+ */
+int u_print_size(uchar uch);
+
+/*
+ * @str  null-terminated UTF-8 string
+ *
+ * Retuns size of @str if it were printed.
+ */
+int u_str_print_size(const char *str);
+
+/*
  * @str  null-terminated UTF-8 string
  * @len  number of characters to measure
  *
@@ -137,7 +151,7 @@ uchar u_get_char(const char *str, int *idx);
  * @uch  unicode character
  */
 void u_set_char_raw(char *str, int *idx, uchar uch);
-void u_set_char(char *str, int *idx, uchar uch);
+void u_set_char(char *str, size_t *idx, uchar uch);
 
 /*
  * @dst    destination buffer
@@ -150,7 +164,7 @@ void u_set_char(char *str, int *idx, uchar uch);
  *
  * Returns number of _bytes_ copied.
  */
-int u_copy_chars(char *dst, const char *src, int *width);
+size_t u_copy_chars(char *dst, const char *src, int *width);
 
 /*
  * @dst    destination buffer
@@ -163,6 +177,17 @@ int u_copy_chars(char *dst, const char *src, int *width);
  * Returns number of bytes written to @dst.
  */
 int u_to_ascii(char *dst, const char *src, int len);
+
+/*
+ * @dst    destination buffer
+ * @src    null-terminated string
+ *
+ * Copies src into dst, changing all invalid utf8 bytes into <xx>,
+ * where xx is the value of the byte in hex.
+ *
+ * Expects dst to be large enough to fit src + the conversions.
+ */
+void u_to_utf8(char *dst, const char *src);
 
 /*
  * @str    null-terminated UTF-8 string, must be long enough

@@ -29,6 +29,12 @@ enum ui_input_mode {
 	SEARCH_MODE
 };
 
+enum ui_query_answer {
+	UI_QUERY_ANSWER_ERROR = -1,
+	UI_QUERY_ANSWER_NO = 0,
+	UI_QUERY_ANSWER_YES = 1
+};
+
 #include <signal.h>
 
 extern volatile sig_atomic_t cmus_running;
@@ -52,9 +58,10 @@ void update_statusline(void);
 void update_filterline(void);
 void update_colors(void);
 void update_full(void);
+void update_size(void);
 void info_msg(const char *format, ...) CMUS_FORMAT(1, 2);
 void error_msg(const char *format, ...) CMUS_FORMAT(1, 2);
-int yes_no_query(const char *format, ...) CMUS_FORMAT(1, 2);
+enum ui_query_answer yes_no_query(const char *format, ...) CMUS_FORMAT(1, 2);
 void search_not_found(void);
 void set_view(int view);
 void set_client_fd(int fd);

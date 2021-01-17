@@ -16,11 +16,11 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "op.h"
-#include "sf.h"
-#include "xmalloc.h"
-#include "debug.h"
-#include "utils.h"
+#include "../op.h"
+#include "../sf.h"
+#include "../xmalloc.h"
+#include "../debug.h"
+#include "../utils.h"
 
 #if defined(__OpenBSD__)
 #include <soundcard.h>
@@ -97,7 +97,7 @@ static struct oss_fmt oss_fmts[] = {
 #endif
 #ifdef AFMT_U32_LE
 	{ AFMT_U32_LE, 32, 0, 0 },
-#endif		
+#endif
 	{ AFMT_S8, 8, 1, 0 },
 	{ AFMT_S8, 8, 1, 1 },
 	{ AFMT_U8, 8, 0, 0 },

@@ -27,10 +27,10 @@
 #include <unistd.h>
 #include <sndio.h>
 
-#include "op.h"
-#include "mixer.h"
-#include "sf.h"
-#include "xmalloc.h"
+#include "../op.h"
+#include "../mixer.h"
+#include "../sf.h"
+#include "../xmalloc.h"
 
 static sample_format_t sndio_sf;
 static struct sio_par par;
@@ -165,16 +165,6 @@ static int sndio_write(const char *buf, int cnt)
 		return -OP_ERROR_INTERNAL;
 
 	return rc;
-}
-
-static int op_sndio_set_option(int key, const char *val)
-{
-	return -OP_ERROR_NOT_OPTION;
-}
-
-static int op_sndio_get_option(int key, char **val)
-{
-	return -OP_ERROR_NOT_OPTION;
 }
 
 static int sndio_pause(void)

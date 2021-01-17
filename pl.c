@@ -46,7 +46,7 @@ struct playlist {
 
 static struct playlist *pl_visible; /* never NULL */
 static struct playlist *pl_marked; /* never NULL */
-static struct window *pl_list_win;
+struct window *pl_list_win;
 
 /* pl_playing_track shares its track_info reference with the playlist it's in.
  * pl_playing_track and pl_playing might be null but pl_playing_track != NULL
@@ -56,7 +56,7 @@ static struct simple_track *pl_playing_track;
 static struct playlist *pl_playing;
 
 static int pl_cursor_in_track_window;
-static struct editable_shared pl_editable_shared;
+struct editable_shared pl_editable_shared;
 static LIST_HEAD(pl_head); /* never empty */
 
 static struct searchable *pl_searchable;
@@ -132,8 +132,12 @@ static int pl_search_matches(void *data, struct iter *iter, const char *text)
 
 	char **words = get_words(text);
 	for (size_t i = 0; words[i]; i++) {
-		if (u_strcasestr_base(pl->name, words[i])) {
-			matched = 1;
+
+		/* set in the loop to deal with empty search string */
+		matched = 1;
+
+		if (!u_strcasestr_base(pl->name, words[i])) {
+			matched = 0;
 			break;
 		}
 	}
@@ -310,7 +314,12 @@ static struct simple_track *pl_get_first_track(struct playlist *pl)
 {
 	/* pl is not empty */
 
-	return to_simple_track(pl->editable.head.next);
+	if (shuffle) {
+		struct shuffle_track *st = shuffle_list_get_next(&pl->shuffle_root, NULL, pl_dummy_filter);
+		return &st->simple_track;
+	} else {
+		return to_simple_track(pl->editable.head.next);
+	}
 }
 
 static struct track_info *pl_play_track(struct playlist *pl, struct simple_track *t)
@@ -423,7 +432,7 @@ static void pl_delete_selected_pl(void)
 		return;
 	}
 
-	if (!yes_no_query("Delete selected playlist? [y/N]"))
+	if (yes_no_query("Delete selected playlist? [y/N]") != UI_QUERY_ANSWER_YES)
 		return;
 
 	struct playlist *pl = pl_visible;
@@ -609,7 +618,7 @@ void pl_import(const char *path)
 void pl_export_selected_pl(const char *path)
 {
 	char *tmp = expand_filename(path);
-	if (access(tmp, F_OK) != 0 || yes_no_query("File exists. Overwrite? [y/N]"))
+	if (access(tmp, F_OK) != 0 || yes_no_query("File exists. Overwrite? [y/N]") == UI_QUERY_ANSWER_YES)
 		cmus_save(pl_save_cb, tmp, pl_visible);
 	free(tmp);
 }
@@ -637,13 +646,23 @@ struct track_info *pl_play_selected_row(void)
 	 */
 
 	int was_in_track_window = pl_cursor_in_track_window;
-	if (!pl_cursor_in_track_window)
-		window_goto_top(pl_editable_shared.win);
+
+	struct track_info *rv = NULL;
+
+	if (!pl_cursor_in_track_window) {
+		if (shuffle && !pl_empty(pl_visible)) {
+			struct shuffle_track *st = shuffle_list_get_next(&pl_visible->shuffle_root, NULL, pl_dummy_filter);
+			struct simple_track *track = &st->simple_track;
+			rv = pl_play_track(pl_visible, track);
+		}
+	}
+	pl_select_playing_track();
+
+	if (!rv)
+		rv = pl_play_selected_track();
 
 	struct playlist *prev_pl = pl_playing;
 	struct simple_track *prev_track = pl_playing_track;
-
-	struct track_info *rv = pl_play_selected_track();
 
 	if (shuffle && rv && (pl_playing == prev_pl) && prev_track) {
 		struct shuffle_track *prev_st = simple_track_to_shuffle_track(prev_track);
@@ -760,10 +779,10 @@ int _pl_for_each_sel(track_info_cb cb, void *data, int reverse)
 		return editable_for_each(&pl_visible->editable, cb, data, reverse);
 }
 
-int pl_for_each_sel(track_info_cb cb, void *data, int reverse)
+int pl_for_each_sel(track_info_cb cb, void *data, int reverse, int advance)
 {
 	if (pl_cursor_in_track_window)
-		return editable_for_each_sel(&pl_visible->editable, cb, data, reverse);
+		return editable_for_each_sel(&pl_visible->editable, cb, data, reverse, advance);
 	else
 		return editable_for_each(&pl_visible->editable, cb, data, reverse);
 }
@@ -826,7 +845,7 @@ void pl_win_toggle(void)
 
 void pl_win_update(void)
 {
-	if (!yes_no_query("Reload this playlist? [y/N]"))
+	if (yes_no_query("Reload this playlist? [y/N]") != UI_QUERY_ANSWER_YES)
 		return;
 
 	pl_clear_visible_pl();

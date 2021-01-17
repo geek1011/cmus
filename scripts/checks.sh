@@ -172,7 +172,7 @@ check_cc()
 	check_program $CC || return 1
 
 	cc_cxx_common
-	CFLAGS="$CFLAGS -I$(pwd) $common_cf"
+	CFLAGS="$CFLAGS $common_cf"
 	LDFLAGS="$LDFLAGS $common_lf"
 
 	makefile_vars CC LD CFLAGS LDFLAGS
@@ -486,7 +486,7 @@ __compile_failed()
 }
 
 # tries to link against a lib
-# 
+#
 # @function:  some function
 # @flags:     extra flags (optional)
 check_function()
