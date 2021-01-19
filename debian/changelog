@@ -1,3 +1,9 @@
+cmus (2.9.0+git2021019.exp.d140a2a-1) unstable; urgency=medium
+
+  * Merge pgaskin/fix-pl-selection.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Tue, 19 Jan 2021 16:57:13 -0500
+
 cmus (2.9.0+git2021017.exp.6c2ef6d-1) unstable; urgency=medium
 
   * Updated to upstream master (v2.9.0).
