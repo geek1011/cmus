@@ -654,8 +654,8 @@ source <filename>
 	Reads and executes commands from <filename>.
 
 toggle <option>
-	Toggles the value of a toggle-able option (all booleans and tristate
-	*aaa_mode*).
+	Toggles the value of a toggle-able option (all booleans and the tristates
+	*shuffle* and *aaa_mode*).
 
 tqueue [NUM]
 	Queues NUM (default 1) random tracks from the library. See also
@@ -1141,7 +1141,7 @@ show_playback_position (true)
 show_remaining_time (false)
 	Display remaining time instead of elapsed time.
 
-shuffle (false)
+shuffle (off) [off, tracks, albums]
 	Play in shuffled order. Shuffle works in the library views (1-2) and
 	playlist view (3).
 
