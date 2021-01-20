@@ -1393,6 +1393,11 @@ static void cmd_p_prev(char *arg)
 	}
 }
 
+static void cmd_p_rand(char *arg)
+{
+	cmus_rand();
+}
+
 static void cmd_p_stop(char *arg)
 {
 	player_stop();
@@ -2596,6 +2601,7 @@ struct command commands[] = {
 	{ "player-pause-playback", cmd_p_pause_playback, 0, 0,  NULL,                 0, 0          },
 	{ "player-play",           cmd_p_play,           0, 1,  expand_playable,      0, 0          },
 	{ "player-prev",           cmd_p_prev,           0, 0,  NULL,                 0, 0          },
+	{ "player-rand",           cmd_p_rand,           0, 0,  NULL,                 0, 0          },
 	{ "player-stop",           cmd_p_stop,           0, 0,  NULL,                 0, 0          },
 	{ "prev-view",             cmd_prev_view,        0, 0,  NULL,                 0, 0          },
 	{ "left-view",             cmd_left_view,        0, 0,  NULL,                 0, 0          },

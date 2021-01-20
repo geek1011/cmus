@@ -488,6 +488,23 @@ struct track_info *lib_goto_prev(void)
 	return lib_set_track(track);
 }
 
+struct track_info *lib_goto_rand(void)
+{
+	struct tree_track *track;
+
+	if (rb_root_empty(&lib_artist_root)) {
+		BUG_ON(lib_cur_track != NULL);
+		return NULL;
+	}
+	if (shuffle == SHUFFLE_ALBUMS)
+		track = shuffle_album_get_next();
+	else
+		track = (struct tree_track *)shuffle_list_get_next(&lib_shuffle_root,
+				(struct shuffle_info *)lib_cur_track, aaa_mode_filter);
+
+	return lib_set_track(track);
+}
+
 static struct tree_track *sorted_get_selected(void)
 {
 	struct iter sel;

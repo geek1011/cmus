@@ -113,6 +113,7 @@ void lib_init(void);
 void tree_init(void);
 struct track_info *lib_goto_next(void);
 struct track_info *lib_goto_prev(void);
+struct track_info *lib_goto_rand(void);
 void lib_add_track(struct track_info *track_info, void *opaque);
 void lib_set_filter(struct expr *expr);
 void lib_set_live_filter(const char *str);

@@ -526,6 +526,10 @@ player-play [filename] (*x*)
 player-prev (*z*)
 	Skips to the previous track.
 
+player-rand (*B*)
+	Skip to a random track, or to the first track of a random album when
+	*shuffle*=*albums*.
+
 player-stop (*v*)
 	Stops playback.
 
