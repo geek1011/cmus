@@ -357,20 +357,6 @@ static struct track_info *pl_play_first_in_pl_playing(void)
 	return pl_play_track(pl_playing, pl_get_first_track(pl_playing), false);
 }
 
-static struct track_info *pl_play_rand_in_pl_playing(void)
-{
-	if (!pl_playing)
-		pl_playing = pl_visible;
-
-	if (pl_empty(pl_playing)) {
-		pl_playing = NULL;
-		return NULL;
-	}
-
-	struct shuffle_info *si = shuffle_list_get_next(&pl_playing->shuffle_root, NULL, NULL);
-	return pl_play_track(pl_playing, shuffle_info_to_simple_track(si), false);
-}
-
 static struct simple_track *pl_get_next(struct playlist *pl, struct simple_track *cur)
 {
 	return simple_list_get_next(&pl->editable.head, cur, NULL, true);
@@ -644,20 +630,6 @@ struct track_info *pl_goto_next(void)
 struct track_info *pl_goto_prev(void)
 {
 	return pl_goto_generic(pl_get_prev_shuffled, pl_get_prev);
-}
-
-struct track_info *pl_goto_rand(void)
-{
-	struct simple_track *track;
-
-	if (!pl_playing_track)
-		return pl_play_rand_in_pl_playing();
-
-	track = pl_get_next_shuffled(pl_playing, pl_playing_track);
-
-	if (!track)
-		return NULL;
-	return pl_play_track(pl_playing, track, false);
 }
 
 struct track_info *pl_play_selected_row(void)

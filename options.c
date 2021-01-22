@@ -1001,7 +1001,7 @@ static void toggle_set_term_title(void *data)
 }
 
 const char * const shuffle_names[] = {
-	"off", "tracks", "albums", NULL
+	"off", "tracks", "albums", "false", "true", NULL
 };
 
 static void get_shuffle(void *data, char *buf, size_t size)
@@ -1013,8 +1013,13 @@ static void set_shuffle(void *data, const char *buf)
 {
 	int tmp;
 
-	if (!parse_enum(buf, 0, 2, shuffle_names, &tmp))
+	if (!parse_enum(buf, 0, 4, shuffle_names, &tmp))
 		return;
+
+	if (tmp == SHUFFLE_FALSE)
+		tmp = SHUFFLE_OFF;
+	else if (tmp == SHUFFLE_TRUE)
+		tmp = SHUFFLE_TRACKS;
 
 	if (tmp != shuffle)
 		mpris_shuffle_changed();

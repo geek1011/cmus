@@ -50,7 +50,6 @@ void pl_set_sort_str(const char *buf);
 void pl_clear(void);
 struct track_info *pl_goto_next(void);
 struct track_info *pl_goto_prev(void);
-struct track_info *pl_goto_rand(void);
 struct track_info *pl_play_selected_row(void);
 void pl_select_playing_track(void);
 void pl_reshuffle(void);

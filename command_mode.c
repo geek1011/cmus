@@ -1393,9 +1393,14 @@ static void cmd_p_prev(char *arg)
 	}
 }
 
-static void cmd_p_rand(char *arg)
+static void cmd_p_next_album(char *arg)
 {
-	cmus_rand();
+	cmus_next_album();
+}
+
+static void cmd_p_prev_album(char *arg)
+{
+	cmus_prev_album();
 }
 
 static void cmd_p_stop(char *arg)
@@ -1589,19 +1594,31 @@ static void cmd_win_activate(char *arg)
 	struct rb_root *shuffle_root = NULL;
 
 	if (cur_view == TREE_VIEW || cur_view == SORTED_VIEW) {
-		if (lib_cur_track)
-			previous = &lib_cur_track->simple_track.shuffle_info;
-		shuffle_root = &lib_shuffle_root;
+		if (shuffle == SHUFFLE_TRACKS) {
+			if (lib_cur_track)
+				previous = &lib_cur_track->simple_track.shuffle_info;
+			shuffle_root = &lib_shuffle_root;
+		} else if (shuffle == SHUFFLE_ALBUMS) {
+			if (lib_cur_track)
+				previous = &lib_cur_track->album->shuffle_info;
+			shuffle_root = &lib_album_shuffle_root;
+		}
 	}
 
 	switch (cur_view) {
 	case TREE_VIEW:
 		info = tree_activate_selected();
-		next = &lib_cur_track->simple_track.shuffle_info;
+		if (shuffle == SHUFFLE_TRACKS)
+			next = &lib_cur_track->simple_track.shuffle_info;
+		else if (shuffle == SHUFFLE_ALBUMS)
+			next = &lib_cur_track->album->shuffle_info;
 		break;
 	case SORTED_VIEW:
 		info = sorted_activate_selected();
-		next = &lib_cur_track->simple_track.shuffle_info;
+		if (shuffle == SHUFFLE_TRACKS)
+			next = &lib_cur_track->simple_track.shuffle_info;
+		else if (shuffle == SHUFFLE_ALBUMS)
+			next = &lib_cur_track->album->shuffle_info;
 		break;
 	case PLAYLIST_VIEW:
 		info = pl_play_selected_row();
@@ -2597,11 +2614,12 @@ struct command commands[] = {
 	{ "mark",                  cmd_mark,             0, 1,  NULL,                 0, 0          },
 	{ "mute",                  cmd_mute,             0, 0,  NULL,                 0, 0          },
 	{ "player-next",           cmd_p_next,           0, 0,  NULL,                 0, 0          },
+	{ "player-next-album",     cmd_p_next_album,     0, 0,  NULL,                 0, 0          },
 	{ "player-pause",          cmd_p_pause,          0, 0,  NULL,                 0, 0          },
 	{ "player-pause-playback", cmd_p_pause_playback, 0, 0,  NULL,                 0, 0          },
 	{ "player-play",           cmd_p_play,           0, 1,  expand_playable,      0, 0          },
 	{ "player-prev",           cmd_p_prev,           0, 0,  NULL,                 0, 0          },
-	{ "player-rand",           cmd_p_rand,           0, 0,  NULL,                 0, 0          },
+	{ "player-prev-album",     cmd_p_prev_album,     0, 0,  NULL,                 0, 0          },
 	{ "player-stop",           cmd_p_stop,           0, 0,  NULL,                 0, 0          },
 	{ "prev-view",             cmd_prev_view,        0, 0,  NULL,                 0, 0          },
 	{ "left-view",             cmd_left_view,        0, 0,  NULL,                 0, 0          },
