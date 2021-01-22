@@ -1,3 +1,10 @@
+cmus (2.9.0+git20210122.exp.846294e-1) unstable; urgency=medium
+
+  * Updated to upstream master.
+    * Includes pgaskin/fix-pl-selection.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Fri, 22 Jan 2021 14:00:17 -0500
+
 cmus (2.9.0+git20210121.exp.6d17057-1) unstable; urgency=medium
 
   * Merge gavtroy/dev_album_shuffle.
