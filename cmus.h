@@ -84,6 +84,7 @@ int cmus_playlist_for_each(const char *buf, int size, int reverse,
 
 void cmus_next(void);
 void cmus_prev(void);
+void cmus_rand(void);
 
 extern int cmus_next_track_request_fd;
 struct track_info *cmus_get_next_track(void);
