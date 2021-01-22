@@ -4,6 +4,7 @@ bind common b player-next
 bind common c player-pause
 bind common x player-play
 bind common z player-prev
+bind common B player-rand
 bind common v player-stop
 
 bind common ] vol +0 +1%
