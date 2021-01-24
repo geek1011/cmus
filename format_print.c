@@ -28,10 +28,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 
 static int width;
 static int align_left;
 static int pad;
+static bool width_is_exact;
 
 static struct gbuf cond_buffer = {0, 64, 0};
 static struct gbuf l_str = {0, 256, 0};
@@ -168,9 +170,9 @@ static void print_str(const char *src)
 {
 	int str_width = u_str_width(src);
 	gbuf_grow(str, (width ? width : str_width) * 4);
-	*len += (width ? width : str_width);
 
-	if (width) {
+	if (width && width_is_exact) {
+		*len += width;
 		int ws_len;
 		int i = 0;
 
@@ -227,18 +229,15 @@ static void print_str(const char *src)
 
 		}
 	} else {
-		int s = 0;
-		size_t d = 0;
-		uchar u;
-
-		while (1) {
-			u = u_get_char(src, &s);
-			if (u == 0)
-				break;
-			u_set_char(str->buffer + str->len, &d, u);
+		int w = width ? width : INT_MAX;
+		int copy_bytes = u_copy_chars(str->buffer + str->len, src, &w);
+		if (src[copy_bytes] == '\0') {
+			*len += str_width;
+		} else {
+			*len += width;
+			copy_bytes = mark_clipped_text(str->buffer + str->len, width);
 		}
-
-		str->len += d;
+		str->len += copy_bytes;
 	}
 }
 
@@ -406,6 +405,8 @@ static uchar format_skip_cond_expr(const char *format, int *s)
 		if (u == '-') {
 			u = u_get_char(format, s);
 		}
+		if (u == '.')
+			u = u_get_char(format, s);
 		while (isdigit(u)) {
 			u = u_get_char(format, s);
 		}
@@ -423,6 +424,8 @@ static uchar format_skip_cond_expr(const char *format, int *s)
 				if (u == '%' || u == '?' || u == '=')
 					continue;
 				if (u == '-')
+					u = u_get_char(format, s);
+				if (u == '.')
 					u = u_get_char(format, s);
 				while (isdigit(u))
 					u = u_get_char(format, s);
@@ -510,6 +513,11 @@ static void format_parse(int str_width, const char *format, const struct format_
 		align_left = 0;
 		if (u == '-') {
 			align_left = 1;
+			u = u_get_char(format, &s);
+		}
+		width_is_exact = true;
+		if (u == '.') {
+			width_is_exact = false;
 			u = u_get_char(format, &s);
 		}
 		pad = ' ';
@@ -617,9 +625,9 @@ static void format_write(char *buf, int str_width)
 		size_t pos = 0;
 		int idx = 0;
 
-		if (l_space > 0)
+		if (l_space > 0) {
 			mark_clipped_text(l_str.buffer, l_space);
-		else if (l_space < 0) {
+		} else if (l_space < 0) {
 			int w = -l_space;
 			l_space = 0;
 
@@ -718,6 +726,8 @@ static int format_valid_sub(const char *format, const struct format_option *fopt
 			if (u == '%' || u == '=' || u == '?')
 				continue;
 			if (u == '-')
+				u = u_get_char(format, &s);
+			if (u == '.')
 				u = u_get_char(format, &s);
 			if (u == '0') {
 				pad_zero = 1;
