@@ -40,6 +40,15 @@ static struct fp_len str_len = {0, 0};
 static int *len = &str_len.llen;
 static struct gbuf* str = &l_str;
 
+static size_t mark_clipped_text(char *buffer, int buf_len)
+{
+	int clipped_mark_len = min_u(u_str_width(clipped_text_format), buf_len);
+	int char_pos = buf_len - clipped_mark_len;
+	size_t byte_pos = u_skip_chars(buffer, &char_pos);
+	byte_pos += u_copy_chars(buffer + byte_pos, clipped_text_format, &clipped_mark_len);
+	return byte_pos;
+}
+
 static void stack_print(char *stack, int stack_len)
 {
 	int i = 0;
@@ -167,8 +176,10 @@ static void print_str(const char *src)
 
 		if (align_left) {
 			i = width;
-			str->len += u_copy_chars(str->buffer + str->len, src, &i);
-
+			size_t copy_bytes = u_copy_chars(str->buffer + str->len, src, &i);
+			if (src[copy_bytes] != '\0')
+				copy_bytes = mark_clipped_text(str->buffer + str->len, width);
+			str->len += copy_bytes;
 			ws_len = width - i;
 			memset(str->buffer + str->len, ' ', ws_len);
 			str->len += ws_len;
@@ -607,14 +618,14 @@ static void format_write(char *buf, int str_width)
 		int idx = 0;
 
 		if (l_space > 0)
-			pos = u_copy_chars(buf, l_str.buffer, &l_space);
-		if (l_space < 0) {
+			mark_clipped_text(l_str.buffer, l_space);
+		else if (l_space < 0) {
 			int w = -l_space;
+			l_space = 0;
 
 			idx = u_skip_chars(r_str.buffer, &w);
-			if (w != -l_space)
-				buf[pos++] = ' ';
 		}
+		pos = u_copy_chars(buf, l_str.buffer, &l_space);
 		strcpy(buf + pos, r_str.buffer + idx);
 	}
 }
