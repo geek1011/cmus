@@ -201,6 +201,9 @@ x                       player-play
 z                       player-prev
 v                       player-stop
 
+B                       player-next-album
+Z                       player-prev-album
+
 ]                       vol +0 +1%
 [                       vol +1% +0
 +                       vol +10%
@@ -513,7 +516,7 @@ pl-rename <name>
 player-next (*b*)
 	Skips to the next track.
 
-player-next-album (*B)
+player-next-album (*B*)
 	Skips to the next album. If *shuffle*=`tracks` or a playlist is active,
 	skips to the next track.
 
@@ -530,7 +533,7 @@ player-play [filename] (*x*)
 player-prev (*z*)
 	Skips to the previous track.
 
-player-prev-album (*Z)
+player-prev-album (*Z*)
 	Skips to the previous album. If *shuffle*=`tracks` or a playlist is active,
 	skips to the previous track.
 
@@ -575,6 +578,9 @@ rand
 
 refresh (*^L*)
 	Redraws the terminal window.
+
+reshuffle
+	Reshuffles the shuffle lists for both library and playlist views.
 
 run <command>
 	Runs a command for the marked tracks OR the selected one if none marked.
@@ -654,9 +660,6 @@ shell <command>
 
 showbind <context> <key>
 	Shows a key binding.
-
-shuffle
-	Reshuffles the shuffle lists for both library and playlist views.
 
 source <filename>
 	Reads and executes commands from <filename>.
