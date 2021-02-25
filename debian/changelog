@@ -1,3 +1,11 @@
+cmus (2.9.1+git20210224.exp.2bf07ef-1) unstable; urgency=medium
+
+  * Update gavtroy/dev_album_shuffle.
+  * Merge gavtroy/dev_format_nested.
+  * Merge gavtroy/dev_ignore_dups.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Wed, 24 Feb 2021 20:52:35 -0500
+
 cmus (2.9.1+git20210122.exp.c2038a2-1) unstable; urgency=medium
 
   * Update gavtroy/dev_album_shuffle.
