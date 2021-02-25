@@ -153,6 +153,7 @@ extern int smart_artist_sort;
 extern int scroll_offset;
 extern int rewind_offset;
 extern int skip_track_info;
+extern int ignore_duplicates;
 extern int mouse;
 extern int mpris;
 extern int time_show_leading_zero;
@@ -192,6 +193,10 @@ extern char *statusline_format;
 /* format string for window title */
 extern char *window_title_format;
 extern char *window_title_alt_format;
+
+/* format string used to terminate all clipped text */
+extern char *clipped_text_format;
+extern char *clipped_text_internal;
 
 extern char *id3_default_charset;
 extern char *icecast_default_charset;

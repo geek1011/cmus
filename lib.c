@@ -170,12 +170,51 @@ static int is_filtered(struct track_info *ti)
 	return 0;
 }
 
+static bool track_exists(struct track_info *ti)
+{
+	struct rb_node *node;
+	struct artist *artist;
+	struct album *album;
+	struct tree_track *track;
+
+	if (!ti->title)
+		return false;
+
+	const char *ti_artist_name = tree_artist_name(ti);
+	rb_for_each_entry(artist, node, &lib_artist_root, tree_node) {
+		if (strcmp(artist->name, ti_artist_name) == 0)
+			break;
+	}
+	if (!artist)
+		return false;
+
+	const char *ti_album_name = tree_album_name(ti);
+	rb_for_each_entry(album, node, &artist->album_root, tree_node) {
+		if (strcmp(album->name, ti_album_name) == 0)
+			break;
+	}
+	if (!album)
+		return false;
+
+	rb_for_each_entry(track, node, &album->track_root, tree_node) {
+		struct track_info *iter_ti = tree_track_info(track);
+		if (iter_ti->tracknumber == ti->tracknumber
+				&& iter_ti->discnumber == ti->discnumber
+				&& iter_ti->title && strcmp(iter_ti->title, ti->title) == 0)
+			return true;
+	}
+	return false;
+}
+
 void lib_add_track(struct track_info *ti, void *opaque)
 {
 	if (add_filter && !expr_eval(add_filter, ti)) {
 		/* filter any files excluded by lib_add_filter */
 		return;
 	}
+
+	if (ignore_duplicates && track_exists(ti))
+		return;
 
 	if (!hash_insert(ti)) {
 		/* duplicate files not allowed */
@@ -391,6 +430,10 @@ void lib_reshuffle(void)
 {
 	shuffle_list_reshuffle(&lib_shuffle_root);
 	shuffle_list_reshuffle(&lib_album_shuffle_root);
+	if (lib_cur_track) {
+		shuffle_insert(&lib_shuffle_root, NULL, &lib_cur_track->simple_track.shuffle_info);
+		shuffle_insert(&lib_album_shuffle_root, NULL, &lib_cur_track->album->shuffle_info);
+	}
 }
 
 void lib_sort_artists(void) {

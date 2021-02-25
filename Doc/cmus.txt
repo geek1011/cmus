@@ -201,6 +201,9 @@ x                       player-play
 z                       player-prev
 v                       player-stop
 
+B                       player-next-album
+Z                       player-prev-album
+
 ]                       vol +0 +1%
 [                       vol +1% +0
 +                       vol +10%
@@ -513,7 +516,7 @@ pl-rename <name>
 player-next (*b*)
 	Skips to the next track.
 
-player-next-album (*B)
+player-next-album (*B*)
 	Skips to the next album. If *shuffle*=`tracks` or a playlist is active,
 	skips to the next track.
 
@@ -530,7 +533,7 @@ player-play [filename] (*x*)
 player-prev (*z*)
 	Skips to the previous track.
 
-player-prev-album (*Z)
+player-prev-album (*Z*)
 	Skips to the previous album. If *shuffle*=`tracks` or a playlist is active,
 	skips to the previous track.
 
@@ -575,6 +578,9 @@ rand
 
 refresh (*^L*)
 	Redraws the terminal window.
+
+reshuffle
+	Reshuffles the shuffle lists for both library and playlist views.
 
 run <command>
 	Runs a command for the marked tracks OR the selected one if none marked.
@@ -654,9 +660,6 @@ shell <command>
 
 showbind <context> <key>
 	Shows a key binding.
-
-shuffle
-	Reshuffles the shuffle lists for both library and playlist views.
 
 source <filename>
 	Reads and executes commands from <filename>.
@@ -1018,6 +1021,12 @@ display_artist_sort_name (false)
 follow (false)
 	If enabled, always select the currently playing track on track change.
 
+format_clipped_text [`Plain String`]
+	String used to lead out any text that is cut off by field limits.
+
+	Note: `Format String` rules are not applied. A plain string such as "..."
+	is expected.
+
 format_current [`Format String`]
 	Format string for the line displaying currently playing track.
 
@@ -1071,6 +1080,11 @@ icecast_default_charset (ISO-8859-1)
 	Default character set to use for non-UTF-8 icecast stream metadata.
 
 	Note: This is used only if the metadata is not valid UTF-8.
+
+ignore_duplicates (true)
+	Ignore duplicates when adding tracks to the library. A track is a duplicate
+	if it has a matching artist, album, disc number, track number, and track
+	name.
 
 lib_add_filter [`Filter`]
 	Apply filter when adding files to the library. See *FILTERS*.
@@ -1310,6 +1324,8 @@ Special Keys:
 	    %{part}		@br
 	    %{subtitle}		@br
 	    %{media}		@br
+	%!
+		prior text is of lower importance and may be shortened if needed (use at most once)
 	%=
 		start align right (use at most once)
 	%%
@@ -1341,7 +1357,7 @@ Examples:
 	@pre
 	:set format_trackwin= %02n. %t %{?y?(%y)}%= %d
 	:set format_current= %n. %-30t %40F (%y)%= %d
-	:set format_current= %a - %l - %02n. %t%= %{bitrate}Kbps %g %y
+	:set format_current= %a - %l%! - %02n. %t%= %{bitrate}Kbps %g %y
 	:set format_playlist= %f%= %6{rg_track_gain} dB  %8{rg_track_peak}
 	:set format_playlist= %-25%a %-15%l %3n. %t%= %y %d
 	@endpre

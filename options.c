@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <strings.h>
+#include <wchar.h>
 
 #if defined(__sun__)
 #include <ncurses.h>
@@ -76,6 +77,7 @@ int smart_artist_sort = 1;
 int scroll_offset = 2;
 int rewind_offset = 5;
 int skip_track_info = 0;
+int ignore_duplicates = 1;
 int auto_expand_albums_follow = 1;
 int auto_expand_albums_search = 1;
 int auto_expand_albums_selcur = 1;
@@ -147,6 +149,8 @@ char *track_win_alt_format = NULL;
 char *list_win_format = NULL;
 char *list_win_format_va = NULL;
 char *list_win_alt_format = NULL;
+char *clipped_text_format = NULL;
+char *clipped_text_internal = NULL;
 char *current_format = NULL;
 char *current_alt_format = NULL;
 char *statusline_format = NULL;
@@ -207,6 +211,7 @@ static int parse_bool(const char *buf, int *val)
 
 /* this is used as id in struct cmus_opt */
 enum format_id {
+	FMT_CLIPPED_TEXT,
 	FMT_CURRENT,
 	FMT_CURRENT_ALT,
 	FMT_STATUSLINE,
@@ -231,8 +236,9 @@ static const struct {
 	const char *name;
 	const char *value;
 } str_defaults[] = {
+	[FMT_CLIPPED_TEXT]	= { "format_clipped_text"	, "…"							},
 	[FMT_CURRENT_ALT]	= { "altformat_current"		, " %F "						},
-	[FMT_CURRENT]		= { "format_current"		, " %a - %l -%3n. %t%= %y "				},
+	[FMT_CURRENT]		= { "format_current"		, " %a - %l%! - %n. %t%= %y "				},
 	[FMT_STATUSLINE]	= { "format_statusline"		,
 		" %{status} %{?show_playback_position?%{position} %{?duration?/ %{duration} }?%{?duration?%{duration} }}"
 		"- %{total} %{?bpm>0?at %{bpm} BPM }"
@@ -1099,6 +1105,21 @@ static void toggle_skip_track_info(void *data)
 	skip_track_info ^= 1;
 }
 
+static void get_ignore_duplicates(void *data, char *buf, size_t size)
+{
+	strscpy(buf, bool_names[ignore_duplicates], size);
+}
+
+static void set_ignore_duplicates(void *data, const char *buf)
+{
+	parse_bool(buf, &ignore_duplicates);
+}
+
+static void toggle_ignore_duplicates(void *data)
+{
+	ignore_duplicates ^= 1;
+}
+
 void update_mouse(void)
 {
 	if (mouse) {
@@ -1332,6 +1353,8 @@ static void set_attr(void *data, const char *buf)
 static char **id_to_fmt(enum format_id id)
 {
 	switch (id) {
+	case FMT_CLIPPED_TEXT:
+		return &clipped_text_format;
 	case FMT_CURRENT_ALT:
 		return &current_alt_format;
 	case FMT_PLAYLIST_ALT:
@@ -1383,6 +1406,14 @@ static void set_format(void *data, const char *buf)
 	}
 	free(*fmtp);
 	*fmtp = xstrdup(buf);
+
+	update_full();
+}
+
+static void set_clipped_text_format(void *data, const char *buf)
+{
+	free(clipped_text_format);
+	clipped_text_format = clipped_text_internal = xstrdup(buf);
 
 	update_full();
 }
@@ -1441,6 +1472,7 @@ static const struct {
 	DN_FLAGS(status_display_program, OPT_PROGRAM_PATH)
 	DT(wrap_search)
 	DT(skip_track_info)
+	DT(ignore_duplicates)
 	DT(mouse)
 	DT(mpris)
 	DT(time_show_leading_zero)
@@ -1564,6 +1596,8 @@ void options_add(void)
 		option_add(str_defaults[i].name, id_to_fmt(i), get_format,
 				set_format, NULL, 0);
 
+	option_find("format_clipped_text")->set = set_clipped_text_format;
+
 	for (i = 0; i < NR_COLORS; i++)
 		option_add(color_names[i], &colors[i], get_color, set_color,
 				NULL, 0);
@@ -1617,6 +1651,15 @@ void options_load(void)
 	if (source_file(filename) == -1) {
 		if (errno != ENOENT)
 			error_msg("loading %s: %s", filename, strerror(errno));
+	}
+
+	/* check if charset supports the default format_clipped_text symbol */
+	if (strcmp(clipped_text_format, str_defaults[FMT_CLIPPED_TEXT].value) == 0) {
+		mbstate_t mbstate = {0};
+		char mb[MB_CUR_MAX];
+		if (wcrtomb(mb, L'…', &mbstate) == -1) {
+			clipped_text_internal = xstrdup("...");
+		}
 	}
 }
 
