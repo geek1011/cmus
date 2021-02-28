@@ -45,7 +45,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <strings.h>
-#include <wchar.h>
 
 #if defined(__sun__)
 #include <ncurses.h>
@@ -1653,13 +1652,9 @@ void options_load(void)
 			error_msg("loading %s: %s", filename, strerror(errno));
 	}
 
-	/* check if charset supports the default format_clipped_text symbol */
-	if (strcmp(clipped_text_format, str_defaults[FMT_CLIPPED_TEXT].value) == 0) {
-		mbstate_t mbstate = {0};
-		char mb[MB_CUR_MAX];
-		if (wcrtomb(mb, L'…', &mbstate) == -1) {
-			clipped_text_internal = xstrdup("...");
-		}
+	/* replace the default format_clipped_text symbol in ascii terminal */
+	if (!using_utf8 && strcmp(clipped_text_format, str_defaults[FMT_CLIPPED_TEXT].value) == 0) {
+		clipped_text_internal = xstrdup("...");
 	}
 }
 
