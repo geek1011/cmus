@@ -1,3 +1,19 @@
+cmus (2.9.1+git20210601.exp.48efe76-1) unstable; urgency=medium
+
+  * Update allavaz/smart-rg.
+  * Update gavtroy/dev_album_shuffle.
+  * Merge gavtroy/dev_wideterm.
+  * Update to upstream master.
+    * Includes allavaz/smart-rg.
+    * Includes gavtroy/dev_format_nested.
+    * Includes gavtroy/dev_wideterm.
+    * Includes gavtroy/dev_album_shuffle.
+  * Update gavtroy/dev_ignore_dups.
+  * Merge dryleev/fix-ffmpeg-freeze.
+  * Merge nefthy/flac-channel-map-fix.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Tue, 01 Jun 2021 08:12:39 -0400
+
 cmus (2.9.1+git20210228.exp.84db889-1) unstable; urgency=medium
 
   * Merge allavaz/smart-rg.
