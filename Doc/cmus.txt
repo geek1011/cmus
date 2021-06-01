@@ -1081,7 +1081,7 @@ icecast_default_charset (ISO-8859-1)
 
 	Note: This is used only if the metadata is not valid UTF-8.
 
-ignore_duplicates (true)
+ignore_duplicates (false)
 	Ignore duplicates when adding tracks to the library. A track is a duplicate
 	if it has a matching artist, album, disc number, track number, and track
 	name.
@@ -1124,7 +1124,9 @@ repeat_current (false)
 	Repeat current track forever.
 
 replaygain (disabled) [track, album, track-preferred, album-preferred, smart]
-	Enable Replay Gain.
+	Enable Replay Gain. The smart setting behaves like track-preferred when
+	shuffle is on, or the queue is active, or when playing from a playlist.
+	Otherwise, it behaves like album-preferred.
 
 replaygain_limit (true)
 	Use replay gain limiting when clipping.

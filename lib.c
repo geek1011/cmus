@@ -24,6 +24,7 @@
 #include "rbtree.h"
 #include "debug.h"
 #include "utils.h"
+#include "u_collate.h"
 #include "ui_curses.h" /* cur_view */
 
 #include <pthread.h>
@@ -177,22 +178,26 @@ static bool track_exists(struct track_info *ti)
 	struct album *album;
 	struct tree_track *track;
 
-	if (!ti->title)
+	if (!ti->collkey_title)
 		return false;
 
-	const char *ti_artist_name = tree_artist_name(ti);
+	char *artist_collkey_name = u_strcasecoll_key(tree_artist_name(ti));
 	rb_for_each_entry(artist, node, &lib_artist_root, tree_node) {
-		if (strcmp(artist->name, ti_artist_name) == 0)
+		if (strcmp(artist->collkey_name, artist_collkey_name) == 0)
 			break;
 	}
+	free(artist_collkey_name);
+
 	if (!artist)
 		return false;
 
-	const char *ti_album_name = tree_album_name(ti);
+	char *album_collkey_name = u_strcasecoll_key(tree_album_name(ti));
 	rb_for_each_entry(album, node, &artist->album_root, tree_node) {
-		if (strcmp(album->name, ti_album_name) == 0)
+		if (strcmp(album->collkey_name, album_collkey_name) == 0)
 			break;
 	}
+	free(album_collkey_name);
+
 	if (!album)
 		return false;
 
@@ -200,7 +205,7 @@ static bool track_exists(struct track_info *ti)
 		struct track_info *iter_ti = tree_track_info(track);
 		if (iter_ti->tracknumber == ti->tracknumber
 				&& iter_ti->discnumber == ti->discnumber
-				&& iter_ti->title && strcmp(iter_ti->title, ti->title) == 0)
+				&& iter_ti->collkey_title && strcmp(iter_ti->collkey_title, ti->collkey_title) == 0)
 			return true;
 	}
 	return false;
