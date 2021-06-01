@@ -109,8 +109,6 @@ void cmus_next_album(void)
 {
 	struct track_info *info;
 
-	view_clear(QUEUE_VIEW);
-
 	if (play_library) {
 		info = lib_goto_next_album();
 	} else {
@@ -124,8 +122,6 @@ void cmus_next_album(void)
 void cmus_prev_album(void)
 {
 	struct track_info *info;
-
-	view_clear(QUEUE_VIEW);
 
 	if (play_library) {
 		info = lib_goto_prev_album();
