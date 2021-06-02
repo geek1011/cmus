@@ -1,3 +1,11 @@
+cmus (2.9.1+git20210602.exp.a3e6caa-1) unstable; urgency=medium
+
+  * Update to upstream master.
+    * Includes dryleev/fix-ffmpeg-freeze.
+  * Merge pgaskin/pl-env.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Wed, 02 Jun 2021 14:49:04 -0400
+
 cmus (2.9.1+git20210601.exp.48efe76-1) unstable; urgency=medium
 
   * Update allavaz/smart-rg.
