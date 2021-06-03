@@ -106,7 +106,7 @@ static char *pl_env_getenv_normalized(const char *var)
 	}
 
 	/* remove the trailing slash if the path isn't / */
-	if (w && new[0] != '/' && new[w-1] == '/') {
+	if (w >= 2 && new[w-1] == '/') {
 		w--;
 	}
 
