@@ -16,7 +16,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "cache.h"
 #include "editable.h"
+#include "options.h"
 #include "search.h"
 #include "track.h"
 #include "track_info.h"
@@ -124,8 +126,12 @@ void editable_remove_track(struct editable *e, struct simple_track *track)
 	if (ti->duration != -1)
 		e->total_time -= ti->duration;
 
+	if (remove_cache_with_track)
+		cache_remove_ti(ti);
+
 	sorted_list_remove_track(&e->head, &e->tree_root, track);
 	e->shared->free_track(e, &track->node);
+
 }
 
 void editable_remove_sel(struct editable *e)
