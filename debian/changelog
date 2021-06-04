@@ -1,3 +1,13 @@
+cmus (2.9.1+git20210604.exp.45c5a31-1) unstable; urgency=medium
+
+  * Update to upstream master.
+    * Includes pgaskin/fix-1093.
+  * Update pgaskin/pl-env.
+  * Merge pgaskin/fix-passwd-docs.
+  * Merge pgaskin/remove-cache-with-track.
+
+ -- Patrick Gaskin <patrick@pgaskin.net>  Fri, 04 Jun 2021 12:25:11 -0400
+
 cmus (2.9.1+git20210603.exp.71ebcd3-1) unstable; urgency=medium
 
   * Update to upstream master.
