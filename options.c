@@ -77,6 +77,7 @@ int scroll_offset = 2;
 int rewind_offset = 5;
 int skip_track_info = 0;
 int ignore_duplicates = 0;
+int remove_cache_with_track = 0;
 int auto_expand_albums_follow = 1;
 int auto_expand_albums_search = 1;
 int auto_expand_albums_selcur = 1;
@@ -1170,6 +1171,21 @@ static void toggle_ignore_duplicates(void *data)
 	ignore_duplicates ^= 1;
 }
 
+static void get_remove_cache_with_track(void *data, char *buf, size_t size)
+{
+	strscpy(buf, bool_names[remove_cache_with_track], size);
+}
+
+static void set_remove_cache_with_track(void *data, const char *buf)
+{
+	parse_bool(buf, &remove_cache_with_track);
+}
+
+static void toggle_remove_cache_with_track(void *data)
+{
+	remove_cache_with_track ^= 1;
+}
+
 void update_mouse(void)
 {
 	if (mouse) {
@@ -1523,6 +1539,7 @@ static const struct {
 	DT(wrap_search)
 	DT(skip_track_info)
 	DT(ignore_duplicates)
+	DT(remove_cache_with_track)
 	DT(mouse)
 	DT(mpris)
 	DT(time_show_leading_zero)
