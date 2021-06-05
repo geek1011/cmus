@@ -127,8 +127,12 @@ static const char *pl_env_get(const char *var, int var_len)
 	while (ve > vs && isspace(*(ve-1))) ve--;
 	vl = ve-vs;
 
-	if (memchr(vs, (int) vl, PL_ENV_DELIMITER) || memchr(vs, (int) vl, '='))
+	if (!vl)
 		return NULL;
+
+	for (const char *c = vs; c < ve; c++)
+		if (*c == PL_ENV_DELIMITER || *c == '=')
+			return NULL;
 
 	for (char **x = pl_env_cache; x && *x; x++)
 		if (strncmp(*x, vs, vl) == 0 && (*x)[vl] == '=')

@@ -547,11 +547,12 @@ static void set_pl_env_vars(void *data, const char *buf)
 		if (*x == ',')
 			n++;
 	char **a = pl_env_vars = xnew(char*, n+1);
-	for (char *x = *a++ = xstrdup(buf); *x; x++)
+	for (char *x = *a++ = xstrdup(buf); *x; x++) {
 		if (*x == ',') {
 			*a++ = x+1;
 			*x = '\0';
 		}
+	}
 	*a = NULL;
 }
 
