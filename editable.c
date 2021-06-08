@@ -112,7 +112,7 @@ void editable_add_before(struct editable *e, struct simple_track *track)
 	do_editable_add(e, track, -1);
 }
 
-void editable_remove_track(struct editable *e, struct simple_track *track)
+void editable_remove_track(struct editable *e, struct simple_track *track, int deletion)
 {
 	struct track_info *ti = track->info;
 	struct iter iter;
@@ -126,7 +126,7 @@ void editable_remove_track(struct editable *e, struct simple_track *track)
 	if (ti->duration != -1)
 		e->total_time -= ti->duration;
 
-	if (remove_cache_with_track)
+	if (deletion && remove_cache_with_track)
 		cache_remove_ti(ti);
 
 	sorted_list_remove_track(&e->head, &e->tree_root, track);
@@ -146,13 +146,13 @@ void editable_remove_sel(struct editable *e)
 			next = item->next;
 			t = to_simple_track(item);
 			if (t->marked)
-				editable_remove_track(e, t);
+				editable_remove_track(e, t, 1);
 			item = next;
 		}
 	} else {
 		t = get_selected(e);
 		if (t)
-			editable_remove_track(e, t);
+			editable_remove_track(e, t, 1);
 	}
 }
 
@@ -327,12 +327,12 @@ void editable_move_before(struct editable *e)
 		move_sel(e, find_insert_before_point(e, &sel->node));
 }
 
-void editable_clear(struct editable *e)
+void editable_clear(struct editable *e, int deletion)
 {
 	struct list_head *item, *tmp;
 
 	list_for_each_safe(item, tmp, &e->head)
-		editable_remove_track(e, to_simple_track(item));
+		editable_remove_track(e, to_simple_track(item), deletion);
 }
 
 void editable_remove_matching_tracks(struct editable *e,
@@ -343,7 +343,7 @@ void editable_remove_matching_tracks(struct editable *e,
 	list_for_each_safe(item, tmp, &e->head) {
 		struct simple_track *t = to_simple_track(item);
 		if (cb(data, t->info))
-			editable_remove_track(e, t);
+			editable_remove_track(e, t, 0);
 	}
 }
 
@@ -445,7 +445,7 @@ void editable_update_track(struct editable *e, struct track_info *old, struct tr
 				track_info_ref(new);
 				track->info = new;
 			} else {
-				editable_remove_track(e, track);
+				editable_remove_track(e, track, 1);
 			}
 			changed = 1;
 		}
